@@ -49,7 +49,7 @@ fake_green = False
 
 def collect_image_files(image_dir,file_pattern):
   images = glob.glob(image_dir + '/' + file_pattern)
-  images.sort()
+  images.sort(key=lambda f: int(filter(str.isdigit, f)))
   #images = images[:1101]
   #images = images[1102:2202]
   # images = images[2203:]
@@ -81,6 +81,7 @@ def playback_images(image_dir,file_pattern,camera_info_file,pose_file,publish_ra
     tf_pose_publisher = tf.TransformBroadcaster()
   rospy.loginfo('Starting playback.')
   for image_file in image_files:
+    rospy.loginfo(image_file)
     if rospy.is_shutdown():
       break
     now = rospy.Time.now()

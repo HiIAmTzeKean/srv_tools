@@ -1,0 +1,8 @@
+<launch>
+  <node name="img_pub" pkg="bag_tools" type="image_sequence_publisher.py" output="screen">
+    <param name="image_dir" value="/home/tng042/imageDir"/>
+    <param name="file_pattern" value="stitch_*.jpg"/>
+    <param name="camera_info_file" value=""/>
+    <param name="frequency" value="1"/>
+  </node>
+</launch>
