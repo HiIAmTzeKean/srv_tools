@@ -75,6 +75,7 @@ def playback_images(image_dir, file_pattern, camera_info_file, pose_file, publis
     else:
         publish_poses = False
 #   image_files = collect_image_files(image_dir,file_pattern)
+    # print(glob.glob(image_dir + '/' + file_pattern))
     image_file = glob.glob(image_dir + '/' + file_pattern)[0]
     rospy.loginfo('Found {} images.'.format(image_file))
     bridge = cv_bridge.CvBridge()
@@ -87,8 +88,12 @@ def playback_images(image_dir, file_pattern, camera_info_file, pose_file, publis
     if publish_poses:
         tf_pose_publisher = tf.TransformBroadcaster()
     rospy.loginfo('Starting playback.')
-
+    
+    count = 0
     while (True):
+        image_file = image_file[0:-5] + "{}.jpg".format(count)
+        count = (count + 1)%5
+
         rospy.loginfo(image_file)
         if rospy.is_shutdown():
             break
@@ -118,10 +123,10 @@ def playback_images(image_dir, file_pattern, camera_info_file, pose_file, publis
                                             'world')
             # print img_name + ' =? ' + str(poses[idx, 0]) + " pose (" + str(poses[idx, 1]) + ", " + str(poses[idx, 2]) + ", " + str(poses[idx, 3]) + ") orientation (" + str(poses[idx, 4]) + ", " + str(poses[idx, 5]) + ", " + str(poses[idx, 6]) + ")"
         except Exception as e:
+            print(e)
             continue
         rate.sleep()
     rospy.loginfo('No more images left. Stopping.')
-
 
 if __name__ == "__main__":
     rospy.init_node('image_sequence_publisher')
