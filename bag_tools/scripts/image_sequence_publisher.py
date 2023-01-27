@@ -63,7 +63,7 @@ def collect_poses(file):
     return poses
 
 
-def playback_images(image_dir, file_pattern, camera_info_file, pose_file, publish_rate):
+def playback_images(image_dir, file_pattern, camera_info_file, pose_file, publish_rate, image_cycle_limit=1):
     if camera_info_file != "":
         cam_info = camera_info_parser.parse_yaml(camera_info_file)
         publish_cam_info = True
@@ -91,8 +91,10 @@ def playback_images(image_dir, file_pattern, camera_info_file, pose_file, publis
     
     count = 0
     while (True):
+        # start from index 0
         image_file = image_file[0:-5] + "{}.jpg".format(count)
-        count = (count + 1)%5
+        # perform modulo to loop back to 0 index
+        count = (count + 1)%image_cycle_limit
 
         rospy.loginfo(image_file)
         if rospy.is_shutdown():
@@ -133,12 +135,13 @@ if __name__ == "__main__":
     try:
         image_dir = rospy.get_param("~image_dir")
         file_pattern = rospy.get_param("~file_pattern")
+        image_cycle_limit = rospy.get_param("~image_cycle_limit")
         camera_info_file = rospy.get_param("~camera_info_file", "")
         pose_file = rospy.get_param("~pose_file", "")
         frequency = rospy.get_param("~frequency", 10)
         fake_green = rospy.get_param("~fake_green", False)
         playback_images(image_dir, file_pattern,
-                        camera_info_file, pose_file, frequency)
+                        camera_info_file, pose_file, frequency, image_cycle_limit)
     except KeyError as e:
         rospy.logerr('Required parameter missing: %s', e)
     except Exception, e:
